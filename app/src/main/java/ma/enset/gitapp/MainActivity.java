@@ -1,8 +1,11 @@
 package ma.enset.gitapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -67,6 +70,15 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             });
+        });
+        resultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String login = data.get(position).login;
+                Intent intent = new Intent(getApplicationContext(),RepositoryActivity.class);
+                intent.putExtra("login",login);
+                startActivity(intent);
+            }
         });
 
 
