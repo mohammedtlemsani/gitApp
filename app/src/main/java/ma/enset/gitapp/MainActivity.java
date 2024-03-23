@@ -1,6 +1,7 @@
 package ma.enset.gitapp;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -8,10 +9,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import ma.enset.gitapp.model.GitUser;
 import ma.enset.gitapp.model.GitUsersResponse;
+import ma.enset.gitapp.model.UsersListViewModel;
 import ma.enset.gitapp.service.GitRepoServiceApi;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,10 +31,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         EditText searchText = findViewById(R.id.searchText);
         Button searchButton = findViewById(R.id.searchButton);
         ListView resultView = findViewById(R.id.resultView);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1);
+        List<GitUser> data = new ArrayList<>();
+        //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1);
+        UsersListViewModel arrayAdapter = new UsersListViewModel(this,R.layout.users_list_view_layout,data);
         resultView.setAdapter(arrayAdapter);
         Retrofit retrofit=new Retrofit.Builder()
                 .baseUrl("https://api.github.com/")
@@ -41,16 +51,13 @@ public class MainActivity extends AppCompatActivity {
             Call<GitUsersResponse> callGitUsers = gitRepoServiceApi.searchUsers(query);
             callGitUsers.enqueue(new Callback<GitUsersResponse>() {
                 @Override
-                public void onResponse(Call<GitUsersResponse> call, Response<GitUsersResponse> response) {
-                    Log.i("info",String.valueOf(call.request().url()));
+                public void onResponse(@NonNull Call<GitUsersResponse> call, Response<GitUsersResponse> response) {
                     if(!response.isSuccessful()){
-                        Log.i("info",String.valueOf(response.code()));
                         return;
                     }
                     GitUsersResponse gitUsersResponse= response.body();
-                    for(GitUser user: gitUsersResponse.users){
-                        arrayAdapter.add(user.login);
-                    }
+                    assert gitUsersResponse != null;
+                    data.addAll(gitUsersResponse.users);
                     arrayAdapter.notifyDataSetChanged();
 
                 }
