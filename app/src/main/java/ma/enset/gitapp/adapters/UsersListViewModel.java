@@ -1,4 +1,4 @@
-package ma.enset.gitapp.model;
+package ma.enset.gitapp.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.List;
 
 import ma.enset.gitapp.R;
+import ma.enset.gitapp.model.GitUser;
 
 public class UsersListViewModel extends ArrayAdapter<GitUser> {
     private List<GitUser> users;
